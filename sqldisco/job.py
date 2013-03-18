@@ -28,8 +28,8 @@ class SqlJob(Job):
             msg = 'You must specify a valid sqltype from %r' % list(sql_packages.keys())
             logging.info(msg)
             raise Exception(msg)
-        elif type(jobargs.get('connparams', None)) is not dict:
-            msg = 'Parameter connparams must be a dictionary (passed to connect(**kwargs))'
+        elif type(jobargs.get('connargs', None)) is not dict:
+            msg = 'Parameter connargs must be a dictionary (passed to connect(**kwargs))'
             logging.info(msg)
             raise Exception(msg)
 
@@ -37,12 +37,12 @@ class SqlJob(Job):
             msg = 'You must have params as a dict object'
             logging.info(msg)
             raise Exception(msg)
-            
+
         params = jobargs.get('params', {})
 
         if 'SELECT' in jobargs.get('query', ''):
             jobargs['map_input_stream'] = sql_input_stream
-            params['sqlin'] = calculate_splits(jobargs)
+            jobargs['input'] = calculate_splits(jobargs)
 
 
         # TODO Output
@@ -52,6 +52,7 @@ class SqlJob(Job):
         ])
 
         jobargs['params'] = params
+
 
         super(SqlJob, self).run(**jobargs)
         return self

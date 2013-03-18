@@ -3,23 +3,19 @@ File: sql_io.py
 Author: Jon Eisen
 Description: Input and output routines for sql-disco
 '''
-import logger
 
 # Package mappings to DB-API 2.0 compliant dbs
 sql_packages = {
-    'sqlite3': 'sqlite3',
-    'mysql': 'pymysql', #FIXME untested
-    'mssql': 'pymssql',
-    'pg': 'psycopg2' #FIXME untested
+    'mssql': 'pymssql'
 }
 
 def _import(sqltype):
 	''' Import the sql package in question '''
 	return __import__(sql_packages[sqltype]) ## Allow the throw condition to notify the user of errors
 
-def _input(sqltype, connparams, query, input_key='id'):
+def _input(query, sqltype, connargs, **kwargs):
 	package = _import(sqltype)
-	conn = package.connect(**connparams)
+	conn = package.connect(**connargs)
 	cursor = conn.cursor()
 
 	cursor.execute(query)
@@ -59,7 +55,8 @@ def sql_input(stream, size, url, params):
     # This looks like a mistake, but it is intentional.
     # Due to the way that Disco imports and uses this
     # function, we must re-import the module here.
-    from sqldisco.sql_io import _input
-    return _input(params['sqlin']) # url contains our splitter parameters
+    from sqldisco.sqldb_io import _input
+    import json
+    return _input(**json.loads(url)) # url contains our splitter parameters
 
 sql_input_stream = (sql_input,)

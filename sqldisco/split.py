@@ -17,6 +17,7 @@ class SqlSplit:
 		'''Format as json to be passed as the uri parameter'''
 		import json
 		return json.dumps({
+			'dummy': 'notatag://',
 			'sqltype': self.sqltype,
 			'connargs': self.connargs,
 			'query': self.query,
